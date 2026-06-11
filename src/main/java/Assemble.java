@@ -9,11 +9,6 @@ public class Assemble {
     private static final int SteeringSystem_Q = 3;
     private static final int Run_Test       = 4;
 
-    private static final int SEDAN = 1, SUV = 2, TRUCK = 3;
-    private static final int GM = 1, TOYOTA = 2, WIA = 3;
-    private static final int MANDO = 1, CONTINENTAL = 2, BOSCH_B = 3;
-    private static final int BOSCH_S = 1, MOBIS = 2;
-
     private static int[] stack = new int[5];
 
     public static void main(String[] args) {
@@ -190,31 +185,28 @@ public class Assemble {
 
     private static void selectCarType(int a) {
         stack[CarType_Q] = a;
-        System.out.printf("차량 타입으로 %s을 선택하셨습니다.\n", a == 1 ? "Sedan" : a == 2 ? "SUV" : "Truck");
+        System.out.printf("차량 타입으로 %s을 선택하셨습니다.\n", CarType.fromInt(a).getDisplayName());
     }
     private static void selectEngine(int a) {
         stack[Engine_Q] = a;
-        String name = a == 1 ? "GM" : a == 2 ? "TOYOTA" : a == 3 ? "WIA" : "고장난 엔진";
-        System.out.printf("%s 엔진을 선택하셨습니다.\n", name);
+        System.out.printf("%s 엔진을 선택하셨습니다.\n", Engine.fromInt(a).getDisplayName());
     }
     private static void selectBrakeSystem(int a) {
         stack[BrakeSystem_Q] = a;
-        String name = a == 1 ? "MANDO" : a == 2 ? "CONTINENTAL" : "BOSCH";
-        System.out.printf("%s 제동장치를 선택하셨습니다.\n", name);
+        System.out.printf("%s 제동장치를 선택하셨습니다.\n", BrakeSystem.fromInt(a).getDisplayName());
     }
     private static void selectSteeringSystem(int a) {
         stack[SteeringSystem_Q] = a;
-        String name = a == 1 ? "BOSCH" : "MOBIS";
-        System.out.printf("%s 조향장치를 선택하셨습니다.\n", name);
+        System.out.printf("%s 조향장치를 선택하셨습니다.\n", SteeringSystem.fromInt(a).getDisplayName());
     }
 
 
     private static boolean isValidCheck() {
-        if (stack[CarType_Q] == SEDAN && stack[BrakeSystem_Q] == CONTINENTAL) return false;
-        if (stack[CarType_Q] == SUV   && stack[Engine_Q] == TOYOTA)       return false;
-        if (stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA)          return false;
-        if (stack[CarType_Q] == TRUCK && stack[BrakeSystem_Q] == MANDO)  return false;
-        if (stack[BrakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S) return false;
+        if (stack[CarType_Q] == CarType.SEDAN.getValue()         && stack[BrakeSystem_Q] == BrakeSystem.CONTINENTAL.getValue()) return false;
+        if (stack[CarType_Q] == CarType.SUV.getValue()           && stack[Engine_Q] == Engine.TOYOTA.getValue())                return false;
+        if (stack[CarType_Q] == CarType.TRUCK.getValue()         && stack[Engine_Q] == Engine.WIA.getValue())                   return false;
+        if (stack[CarType_Q] == CarType.TRUCK.getValue()         && stack[BrakeSystem_Q] == BrakeSystem.MANDO.getValue())       return false;
+        if (stack[BrakeSystem_Q] == BrakeSystem.BOSCH.getValue() && stack[SteeringSystem_Q] != SteeringSystem.BOSCH.getValue()) return false;
         return true;
     }
 
@@ -223,34 +215,29 @@ public class Assemble {
             System.out.println("자동차가 동작되지 않습니다");
             return;
         }
-        if (stack[Engine_Q] == 4) {
+        if (stack[Engine_Q] == Engine.BROKEN.getValue()) {
             System.out.println("엔진이 고장나있습니다.");
             System.out.println("자동차가 움직이지 않습니다.");
             return;
         }
 
-        String[] carNames = {"", "Sedan", "SUV", "Truck"};
-        String[] engNames = {"", "GM", "TOYOTA", "WIA"};
-        System.out.printf("Car Type : %s\n", carNames[stack[CarType_Q]]);
-        System.out.printf("Engine   : %s\n", engNames[stack[Engine_Q]]);
-        System.out.printf("Brake    : %s\n",
-                stack[BrakeSystem_Q]==1? "Mando":
-                        stack[BrakeSystem_Q]==2? "Continental":"Bosch");
-        System.out.printf("Steering : %s\n",
-                stack[SteeringSystem_Q]==1? "Bosch":"Mobis");
+        System.out.printf("Car Type : %s\n", CarType.fromInt(stack[CarType_Q]).getDisplayName());
+        System.out.printf("Engine   : %s\n", Engine.fromInt(stack[Engine_Q]).getDisplayName());
+        System.out.printf("Brake    : %s\n", BrakeSystem.fromInt(stack[BrakeSystem_Q]).getDisplayName());
+        System.out.printf("Steering : %s\n", SteeringSystem.fromInt(stack[SteeringSystem_Q]).getDisplayName());
         System.out.println("자동차가 동작됩니다.");
     }
 
     private static void testProducedCar() {
-        if (stack[CarType_Q] == SEDAN && stack[BrakeSystem_Q] == CONTINENTAL) {
+        if (stack[CarType_Q] == CarType.SEDAN.getValue()         && stack[BrakeSystem_Q] == BrakeSystem.CONTINENTAL.getValue()) {
             fail("Sedan에는 Continental제동장치 사용 불가");
-        } else if (stack[CarType_Q] == SUV && stack[Engine_Q] == TOYOTA) {
+        } else if (stack[CarType_Q] == CarType.SUV.getValue()    && stack[Engine_Q] == Engine.TOYOTA.getValue()) {
             fail("SUV에는 TOYOTA엔진 사용 불가");
-        } else if (stack[CarType_Q] == TRUCK && stack[Engine_Q] == WIA) {
+        } else if (stack[CarType_Q] == CarType.TRUCK.getValue()  && stack[Engine_Q] == Engine.WIA.getValue()) {
             fail("Truck에는 WIA엔진 사용 불가");
-        } else if (stack[CarType_Q] == TRUCK && stack[BrakeSystem_Q] == MANDO) {
+        } else if (stack[CarType_Q] == CarType.TRUCK.getValue()  && stack[BrakeSystem_Q] == BrakeSystem.MANDO.getValue()) {
             fail("Truck에는 Mando제동장치 사용 불가");
-        } else if (stack[BrakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S) {
+        } else if (stack[BrakeSystem_Q] == BrakeSystem.BOSCH.getValue() && stack[SteeringSystem_Q] != SteeringSystem.BOSCH.getValue()) {
             fail("Bosch제동장치에는 Bosch조향장치 이외 사용 불가");
         } else {
             System.out.println("자동차 부품 조합 테스트 결과 : PASS");
