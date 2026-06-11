@@ -1,3 +1,4 @@
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Assemble {
@@ -201,17 +202,8 @@ public class Assemble {
     }
 
 
-    private static boolean isValidCheck() {
-        if (config.getCarType() == CarType.SEDAN         && config.getBrakeSystem() == BrakeSystem.CONTINENTAL) return false;
-        if (config.getCarType() == CarType.SUV           && config.getEngine() == Engine.TOYOTA)                return false;
-        if (config.getCarType() == CarType.TRUCK         && config.getEngine() == Engine.WIA)                   return false;
-        if (config.getCarType() == CarType.TRUCK         && config.getBrakeSystem() == BrakeSystem.MANDO)       return false;
-        if (config.getBrakeSystem() == BrakeSystem.BOSCH && config.getSteeringSystem() != SteeringSystem.BOSCH) return false;
-        return true;
-    }
-
     private static void runProducedCar() {
-        if (!isValidCheck()) {
+        if (CompatibilityValidator.validate(config).isPresent()) {
             System.out.println("자동차가 동작되지 않습니다");
             return;
         }
@@ -229,16 +221,9 @@ public class Assemble {
     }
 
     private static void testProducedCar() {
-        if (config.getCarType() == CarType.SEDAN         && config.getBrakeSystem() == BrakeSystem.CONTINENTAL) {
-            fail("Sedan에는 Continental제동장치 사용 불가");
-        } else if (config.getCarType() == CarType.SUV    && config.getEngine() == Engine.TOYOTA) {
-            fail("SUV에는 TOYOTA엔진 사용 불가");
-        } else if (config.getCarType() == CarType.TRUCK  && config.getEngine() == Engine.WIA) {
-            fail("Truck에는 WIA엔진 사용 불가");
-        } else if (config.getCarType() == CarType.TRUCK  && config.getBrakeSystem() == BrakeSystem.MANDO) {
-            fail("Truck에는 Mando제동장치 사용 불가");
-        } else if (config.getBrakeSystem() == BrakeSystem.BOSCH && config.getSteeringSystem() != SteeringSystem.BOSCH) {
-            fail("Bosch제동장치에는 Bosch조향장치 이외 사용 불가");
+        Optional<String> result = CompatibilityValidator.validate(config);
+        if (result.isPresent()) {
+            fail(result.get());
         } else {
             System.out.println("자동차 부품 조합 테스트 결과 : PASS");
         }
